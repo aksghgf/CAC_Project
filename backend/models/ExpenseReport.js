@@ -6,6 +6,11 @@ const expenseReportSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Business',
+    required: true
+  },
   employeeName: {
     type: String,
     required: true

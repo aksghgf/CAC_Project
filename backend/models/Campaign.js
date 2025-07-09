@@ -24,10 +24,10 @@ const campaignSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  platform: {
-    type: String,
+  platforms: {
+    type: [String],
     required: true,
-    enum: ['meta', 'google', 'both']
+    enum: ['meta', 'google', 'influencer', 'email', 'billboard']
   },
   status: {
     type: String,
@@ -46,6 +46,11 @@ const campaignSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  businessId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Business',
+    required: true
+  },
   mlOptimizations: {
     targeting: [String],
     budgetSplit: {
@@ -54,6 +59,14 @@ const campaignSchema = new mongoose.Schema({
     },
     suggestedCreatives: [String]
   },
+  influencerLinks: [
+    {
+      influencerId: String,
+      influencerName: String,
+      utmLink: String
+    }
+  ],
+  emailUtmLink: { type: String },
   createdAt: {
     type: Date,
     default: Date.now
