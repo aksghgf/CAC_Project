@@ -1,13 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { TrendingUp, Target, Zap, Shield, BarChart3, Users } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
+import Lottie from 'lottie-react';
+import landingAnimation from '../assets/lf20_49rdyysj.json';
 
-export const LandingPage = ({ onLoginClick }) => {
+export const LandingPage = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
       {/* Header */}
-      <header className="bg-white shadow-sm">
+      <header className="sticky top-0 z-30 bg-white shadow-sm" style={{ position: 'sticky', top: 0 }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -15,36 +19,48 @@ export const LandingPage = ({ onLoginClick }) => {
               <span className="text-xl font-bold text-gray-900">CAC Optimizer Pro</span>
             </div>
             <div className="flex space-x-4">
-              <Button variant="outline" onClick={() => onLoginClick('admin')}>
+              <Button variant="outline" onClick={() => navigate('/login')}>
                 Admin Login
               </Button>
-              <Button onClick={() => onLoginClick('employee')}>
+              <Button onClick={() => navigate('/login')}>
                 Employee Login
               </Button>
             </div>
           </div>
         </div>
       </header>
+      {/* Spacer to prevent content from being hidden under sticky header */}
+      <div className="h-16" />
 
-      {/* Hero Section */}
+      {/* Hero Section with Lottie Animation */}
       <section className="relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
-          <div className="text-center">
-            <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6">
-              Run Ads Like an Agency
-              <span className="text-blue-600"> - Without One</span>
-            </h1>
-            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
-              Eliminate agency fees and gain full control over your ad spend with our ML-powered 
-              automation platform. Save 15-30% of your budget while achieving better results.
-            </p>
-            <div className="flex justify-center space-x-4">
-              <Button size="lg" onClick={() => onLoginClick('admin')}>
-                Start Free Trial
-              </Button>
-              <Button variant="outline" size="lg">
-                Watch Demo
-              </Button>
+          <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8">
+            <div className="w-full md:w-1/2 text-center md:text-left">
+              <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6">
+                Run Ads Like an Agency
+                <span className="text-blue-600"> - Without One</span>
+              </h1>
+              <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto md:mx-0">
+                Eliminate agency fees and gain full control over your ad spend with our ML-powered 
+                automation platform. Save 15-30% of your budget while achieving better results.
+              </p>
+              <div className="flex justify-center md:justify-start space-x-4">
+                <Button size="lg" onClick={() => navigate('/login')}>
+                  Start Free Trial
+                </Button>
+                <Button variant="outline" size="lg">
+                  Watch Demo
+                </Button>
+              </div>
+            </div>
+            <div className="w-full md:w-1/2 flex justify-center md:justify-end mb-8 md:mb-0">
+              <Lottie 
+                animationData={landingAnimation} 
+                loop={true} 
+                className="w-64 h-64 md:w-96 md:h-96 drop-shadow-xl"
+                aria-label="Business analytics animation"
+              />
             </div>
           </div>
         </div>
@@ -153,7 +169,7 @@ export const LandingPage = ({ onLoginClick }) => {
           <p className="text-xl text-blue-100 mb-8">
             Join thousands of businesses saving money while improving their ad performance
           </p>
-          <Button size="lg" variant="secondary" onClick={() => onLoginClick('admin')}>
+          <Button size="lg" variant="secondary" onClick={() => navigate('/login')}>
             Get Started Today
           </Button>
         </div>
@@ -176,3 +192,5 @@ export const LandingPage = ({ onLoginClick }) => {
     </div>
   );
 };
+
+export default LandingPage;

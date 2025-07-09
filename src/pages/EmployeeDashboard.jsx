@@ -1,61 +1,48 @@
-import React, { useState } from 'react';
-import { 
-  TrendingUp, 
-  Upload, 
-  FileText, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  LogOut,
-  Plus
-} from 'lucide-react';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Badge } from '../components/ui/Badge';
+import React, { useState, useEffect } from 'react';
+import { EmployeeHeader } from '../components/employee/EmployeeHeader';
+import { EmployeeStats } from '../components/employee/EmployeeStats';
+import { EmployeeExpenseHistory } from '../components/employee/EmployeeExpenseHistory';
+import { EmployeeMain } from '../components/employee/EmployeeMain';
 import { Modal } from '../components/ui/Modal';
-import { ExpenseForm } from '../components/forms/ExpenseForm';
+import { ExpenseForm } from '../components/employee/ExpenseForm';
+import { CheckCircle, XCircle, Clock } from 'lucide-react';
+import Lottie from 'lottie-react';
+import dashboardEmpty from '../assets/dashboard-empty.json';
+import api from '../utils/api';
+import { useAuth } from '../contexts/AuthContext';
 
-export const EmployeeDashboard = ({ onLogout }) => {
+export const EmployeeDashboard = () => {
   const [showExpenseForm, setShowExpenseForm] = useState(false);
-  const [expenses, setExpenses] = useState([
-    {
-      id: 1,
-      description: 'Billboard advertising campaign',
-      amount: 25000,
-      category: 'billboard',
-      status: 'approved',
-      submittedAt: '2024-01-15',
-      receipt: 'receipt1.pdf'
-    },
-    {
-      id: 2,
-      description: 'Influencer collaboration payment',
-      amount: 15000,
-      category: 'influencer',
-      status: 'pending',
-      submittedAt: '2024-01-14',
-      receipt: 'receipt2.pdf'
-    },
-    {
-      id: 3,
-      description: 'Email marketing tools subscription',
-      amount: 5000,
-      category: 'email',
-      status: 'rejected',
-      submittedAt: '2024-01-13',
-      receipt: 'receipt3.pdf'
-    }
-  ]);
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { logout } = useAuth();
 
-  const handleSubmitExpense = (expenseData) => {
-    const newExpense = {
-      id: expenses.length + 1,
-      ...expenseData,
-      status: 'pending',
-      submittedAt: new Date().toISOString().split('T')[0]
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await api.get('/expenses');
+        setExpenses(res.data);
+      } catch (err) {
+        setError('Failed to load expenses');
+      } finally {
+        setLoading(false);
+      }
     };
-    setExpenses([newExpense, ...expenses]);
-    setShowExpenseForm(false);
+    fetchExpenses();
+  }, []);
+
+  const handleSubmitExpense = async (expenseData) => {
+    setError('');
+    try {
+      const res = await api.post('/expenses', expenseData);
+      setExpenses([res.data, ...expenses]);
+      setShowExpenseForm(false);
+    } catch (err) {
+      setError('Failed to submit expense');
+    }
   };
 
   const getStatusIcon = (status) => {
@@ -72,11 +59,11 @@ export const EmployeeDashboard = ({ onLogout }) => {
   const getStatusBadge = (status) => {
     switch (status) {
       case 'approved':
-        return <Badge variant="success">Approved</Badge>;
+        return <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-green-100 text-green-800">Approved</span>;
       case 'rejected':
-        return <Badge variant="error">Rejected</Badge>;
+        return <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-red-100 text-red-800">Rejected</span>;
       default:
-        return <Badge variant="warning">Pending</Badge>;
+        return <span className="inline-block px-2 py-1 text-xs font-semibold rounded bg-yellow-100 text-yellow-800">Pending</span>;
     }
   };
 
@@ -88,107 +75,53 @@ export const EmployeeDashboard = ({ onLogout }) => {
     .filter(exp => exp.status === 'pending')
     .reduce((sum, exp) => sum + exp.amount, 0);
 
+  const rejectedAmount = expenses
+    .filter(exp => exp.status === 'rejected')
+    .reduce((sum, exp) => sum + exp.amount, 0);
+
+  const hasExpenses = expenses.length > 0;
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <TrendingUp className="h-8 w-8 text-blue-600 mr-2" />
-              <span className="text-xl font-bold text-gray-900">CAC Optimizer Pro</span>
-              <Badge variant="secondary" className="ml-3">Employee</Badge>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button onClick={() => setShowExpenseForm(true)}>
-                <Plus className="h-4 w-4 mr-2" />
-                Submit Expense
-              </Button>
-              <Button variant="ghost" size="sm" onClick={onLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
+      <EmployeeHeader onShowExpenseForm={() => setShowExpenseForm(true)} onLogout={logout} />
+      {/* Creative Dashboard Header */}
+      <div className="flex items-center gap-4 px-8 py-6 bg-gradient-to-r from-purple-600 to-blue-500 shadow-md rounded-b-3xl">
+        <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=employee`} alt="Employee Avatar" className="w-16 h-16 rounded-full border-4 border-white shadow" />
+        <div>
+          <h1 className="text-3xl font-bold text-white mb-1">Welcome, Employee!</h1>
+          <p className="text-purple-100">Track your expenses and submissions below.</p>
         </div>
-      </header>
-
-      {/* Main Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card>
-            <div className="flex items-center">
-              <div className="p-3 bg-green-100 rounded-full">
-                <CheckCircle className="h-6 w-6 text-green-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Total Approved</p>
-                <p className="text-2xl font-bold text-gray-900">₹{totalSpent.toLocaleString()}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center">
-              <div className="p-3 bg-yellow-100 rounded-full">
-                <Clock className="h-6 w-6 text-yellow-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Pending Approval</p>
-                <p className="text-2xl font-bold text-gray-900">₹{pendingAmount.toLocaleString()}</p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center">
-              <div className="p-3 bg-blue-100 rounded-full">
-                <FileText className="h-6 w-6 text-blue-600" />
-              </div>
-              <div className="ml-4">
-                <p className="text-sm text-gray-600">Total Submissions</p>
-                <p className="text-2xl font-bold text-gray-900">{expenses.length}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Expense History */}
-        <Card>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">Expense History</h2>
-            <Button onClick={() => setShowExpenseForm(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              New Expense
-            </Button>
+      </div>
+      <EmployeeMain>
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <span className="text-lg text-gray-500">Loading expenses...</span>
           </div>
-
-          <div className="space-y-4">
-            {expenses.map((expense) => (
-              <div key={expense.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center space-x-4">
-                  {getStatusIcon(expense.status)}
-                  <div>
-                    <p className="font-medium text-gray-900">{expense.description}</p>
-                    <p className="text-sm text-gray-500">
-                      {expense.category} • Submitted on {expense.submittedAt}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center space-x-4">
-                  <span className="text-lg font-semibold text-gray-900">
-                    ₹{expense.amount.toLocaleString()}
-                  </span>
-                  {getStatusBadge(expense.status)}
-                </div>
-              </div>
-            ))}
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <span className="text-lg text-red-500">{error}</span>
           </div>
-        </Card>
-      </main>
-
-      {/* Expense Form Modal */}
+        ) : hasExpenses ? (
+          <>
+            <EmployeeStats
+              totalSpent={totalSpent}
+              pendingAmount={pendingAmount}
+              totalSubmissions={expenses.length}
+            />
+            <EmployeeExpenseHistory
+              expenses={expenses}
+              getStatusIcon={getStatusIcon}
+              onShowExpenseForm={() => setShowExpenseForm(true)}
+            />
+          </>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Lottie animationData={dashboardEmpty} className="w-64 h-64 mb-4" loop={true} />
+            <h3 className="text-xl font-semibold mb-2 text-gray-700">No Expenses Yet</h3>
+            <p className="text-gray-500 mb-4">Submit your first expense to see it here!</p>
+          </div>
+        )}
+      </EmployeeMain>
       <Modal
         isOpen={showExpenseForm}
         onClose={() => setShowExpenseForm(false)}
@@ -203,3 +136,5 @@ export const EmployeeDashboard = ({ onLogout }) => {
     </div>
   );
 };
+
+export default EmployeeDashboard;

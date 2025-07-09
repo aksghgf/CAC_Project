@@ -1,0 +1,1 @@
+export const selectAdminNotes = (state) => state.adminNotes; 

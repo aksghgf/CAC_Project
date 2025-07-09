@@ -60,9 +60,9 @@ export const CACCards = () => {
   const getTrendIcon = (trend) => {
     switch (trend) {
       case 'up':
-        return <TrendingUp className="h-4 w-4 text-red-600" />;
+        return <TrendingUp className="h-4 w-4 text-green-600" />;
       case 'down':
-        return <TrendingDown className="h-4 w-4 text-green-600" />;
+        return <TrendingDown className="h-4 w-4 text-red-600" />;
       default:
         return <Minus className="h-4 w-4 text-gray-600" />;
     }
@@ -140,4 +140,4 @@ export const CACCards = () => {
       </Card>
     </div>
   );
-};
+}; 

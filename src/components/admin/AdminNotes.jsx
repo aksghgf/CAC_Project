@@ -1,31 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react';
-import { getAdminNotes, saveAdminNote, updateAdminNote, deleteAdminNote } from '../../utils/notes';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectAdminNotes } from '../../store/adminNotes/adminNotesSelectors';
+import { addNote, updateNote, deleteNote } from '../../store/adminNotes/adminNotesSlice';
 
 export const AdminNotes = () => {
-  const [notes, setNotes] = useState([]);
+  const notes = useSelector(selectAdminNotes);
+  const dispatch = useDispatch();
   const [isCreating, setIsCreating] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [formData, setFormData] = useState({ title: '', content: '' });
 
-  useEffect(() => {
-    setNotes(getAdminNotes());
-  }, []);
-
   const handleSubmit = (e) => {
     e.preventDefault();
     if (editingId) {
-      const updatedNote = updateAdminNote(editingId, formData);
-      if (updatedNote) {
-        setNotes(notes.map(note => note.id === editingId ? updatedNote : note));
-        setEditingId(null);
-      }
+      dispatch(updateNote({ id: editingId, ...formData }));
+      setEditingId(null);
     } else {
-      const newNote = saveAdminNote(formData);
-      setNotes([newNote, ...notes]);
+      dispatch(addNote(formData));
       setIsCreating(false);
     }
     setFormData({ title: '', content: '' });
@@ -38,9 +33,7 @@ export const AdminNotes = () => {
 
   const handleDelete = (id) => {
     if (window.confirm('Are you sure you want to delete this note?')) {
-      if (deleteAdminNote(id)) {
-        setNotes(notes.filter(note => note.id !== id));
-      }
+      dispatch(deleteNote(id));
     }
   };
 
@@ -145,4 +138,4 @@ export const AdminNotes = () => {
       </div>
     </div>
   );
-};
+}; 

@@ -127,4 +127,4 @@ export const PerformanceCharts = () => {
       </Card>
     </div>
   );
-};
+}; 

@@ -1,51 +1,78 @@
-import { getAuthToken } from './auth';
+import axios from 'axios';
+import { getAuthToken, removeAuthToken } from './auth';
+console.log(".env for frontend ",import.meta.env.VITE_API_URL);
+// Create axios instance
+const api = axios.create({
+  baseURL: 'http://localhost:5000/api', // Hardcoded for local dev
+  timeout: 10000,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? 'https://your-backend-url.com/api' 
-  : 'http://localhost:5000/api';
-
-export const api = {
-  async request(endpoint, options = {}) {
+// Request interceptor to add auth token
+api.interceptors.request.use(
+  (config) => {
     const token = getAuthToken();
-    
-    const config = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token && { Authorization: `Bearer ${token}` }),
-        ...options.headers,
-      },
-      ...options,
-    };
-
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    
-    if (!response.ok) {
-      const error = await response.json();
-      throw new Error(error.message || 'API request failed');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
     }
-
-    return response.json();
+    return config;
   },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
-  get(endpoint) {
-    return this.request(endpoint, { method: 'GET' });
+// Response interceptor to handle auth errors
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      // Token expired or invalid
+      removeAuthToken();
+      window.location.href = '/login';
+    }
+    return Promise.reject(error);
+  }
+);
+
+export const authAPI = {
+  login: (credentials) => {
+    // Use real backend API for login
+    return api.post('/auth/login', credentials);
   },
-
-  post(endpoint, data) {
-    return this.request(endpoint, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    });
+  logout: () => {
+    // Optional: Call backend logout endpoint if you want server-side logout
+    // For now, just return a resolved promise since we handle logout client-side
+    return Promise.resolve();
   },
-
-  put(endpoint, data) {
-    return this.request(endpoint, {
-      method: 'PUT',
-      body: JSON.stringify(data),
-    });
-  },
-
-  delete(endpoint) {
-    return this.request(endpoint, { method: 'DELETE' });
+  getCurrentUser: () => {
+    // Get current user from backend using token
+    return api.get('/auth/me');
   },
 };
+
+// Campaign API
+export const campaignAPI = {
+  getAll: () => api.get('/campaigns'),
+  getById: (id) => api.get(`/campaigns/${id}`),
+  create: (campaignData) => api.post('/campaigns', campaignData),
+  update: (id, campaignData) => api.put(`/campaigns/${id}`, campaignData),
+  delete: (id) => api.delete(`/campaigns/${id}`),
+};
+
+// Billboard API
+export const billboardAPI = {
+  getAll: () => api.get('/billboards'),
+  getById: (id) => api.get(`/billboards/${id}`),
+  create: (billboardData) => api.post('/billboards', billboardData),
+  trackConversion: (id, conversionData) => api.post(`/billboards/${id}/conversion`, conversionData),
+};
+
+// Health check
+export const healthAPI = {
+  check: () => api.get('/health'),
+};
+
+export default api;

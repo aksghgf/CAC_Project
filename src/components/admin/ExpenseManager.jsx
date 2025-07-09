@@ -1,73 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { CheckCircle, XCircle, Eye, Clock, DollarSign } from 'lucide-react';
+import api from '../../utils/api';
 
 export const ExpenseManager = () => {
-  const [expenses, setExpenses] = useState([
-    {
-      id: 1,
-      employeeId: 'EMP001',
-      employeeName: 'John Doe',
-      amount: 25000,
-      description: 'Billboard advertising campaign in Mumbai',
-      category: 'billboard',
-      receipt: 'receipt1.pdf',
-      status: 'pending',
-      submittedAt: '2024-01-15',
-    },
-    {
-      id: 2,
-      employeeId: 'EMP002',
-      employeeName: 'Jane Smith',
-      amount: 15000,
-      description: 'Influencer collaboration payment',
-      category: 'influencer',
-      receipt: 'receipt2.pdf',
-      status: 'pending',
-      submittedAt: '2024-01-14',
-    },
-    {
-      id: 3,
-      employeeId: 'EMP003',
-      employeeName: 'Mike Johnson',
-      amount: 8000,
-      description: 'Email marketing tools subscription',
-      category: 'email',
-      receipt: 'receipt3.pdf',
-      status: 'approved',
-      submittedAt: '2024-01-13',
-      reviewedAt: '2024-01-14',
-    },
-    {
-      id: 4,
-      employeeId: 'EMP001',
-      employeeName: 'John Doe',
-      amount: 12000,
-      description: 'Conference booth setup',
-      category: 'other',
-      receipt: 'receipt4.pdf',
-      status: 'rejected',
-      submittedAt: '2024-01-12',
-      reviewedAt: '2024-01-13',
-    }
-  ]);
+  const [expenses, setExpenses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
-  const handleApprove = (id) => {
-    setExpenses(expenses.map(expense => 
-      expense.id === id 
-        ? { ...expense, status: 'approved', reviewedAt: new Date().toISOString().split('T')[0] }
-        : expense
-    ));
+  useEffect(() => {
+    const fetchExpenses = async () => {
+      setLoading(true);
+      setError('');
+      try {
+        const res = await api.get('/expenses');
+        setExpenses(res.data);
+      } catch (err) {
+        setError('Failed to load expenses');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExpenses();
+  }, []);
+
+  // Debug logging
+  useEffect(() => {
+    console.log('ExpenseManager:', { expenses, error, loading });
+  }, [expenses, error, loading]);
+
+  const handleApprove = async (id) => {
+    try {
+      const res = await api.put(`/expenses/${id}/status`, { status: 'approved' });
+      setExpenses(expenses.map(expense => 
+        expense._id === id ? res.data : expense
+      ));
+    } catch (err) {
+      alert('Failed to approve expense');
+    }
   };
 
-  const handleReject = (id) => {
-    setExpenses(expenses.map(expense => 
-      expense.id === id 
-        ? { ...expense, status: 'rejected', reviewedAt: new Date().toISOString().split('T')[0] }
-        : expense
-    ));
+  const handleReject = async (id) => {
+    try {
+      const res = await api.put(`/expenses/${id}/status`, { status: 'rejected' });
+      setExpenses(expenses.map(expense => 
+        expense._id === id ? res.data : expense
+      ));
+    } catch (err) {
+      alert('Failed to reject expense');
+    }
   };
 
   const getStatusBadge = (status) => {
@@ -150,14 +133,25 @@ export const ExpenseManager = () => {
       {/* Expense List */}
       <Card>
         <h3 className="text-lg font-semibold mb-4">Recent Submissions</h3>
+        {loading ? (
+          <div className="py-8 text-center text-gray-500">Loading...</div>
+        ) : error ? (
+          <div className="py-8 text-center text-red-500">{error}</div>
+        ) : expenses.length === 0 ? (
+          <div className="py-8 text-center text-gray-500">No expenses found for this business.</div>
+        ) : (
         <div className="space-y-4">
           {expenses.map((expense) => (
-            <div key={expense.id} className="border border-gray-200 rounded-lg p-4">
+            <div key={expense._id} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center space-x-3">
                   <div>
-                    <p className="font-medium text-gray-900">{expense.employeeName}</p>
-                    <p className="text-sm text-gray-500">{expense.employeeId}</p>
+                    <p className="font-medium text-gray-900">{expense.employeeName || (typeof expense.employeeId === 'object' ? expense.employeeId?.name : '')}</p>
+                    <p className="text-sm text-gray-500">
+                      {typeof expense.employeeId === 'object'
+                        ? `${expense.employeeId?.email || ''} (${expense.employeeId?._id || ''})`
+                        : (expense.employeeId || expense.employee_id || '')}
+                    </p>
                   </div>
                   {getCategoryBadge(expense.category)}
                 </div>
@@ -173,9 +167,9 @@ export const ExpenseManager = () => {
 
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4 text-sm text-gray-500">
-                  <span>Submitted: {expense.submittedAt}</span>
+                  <span>Submitted: {new Date(expense.submittedAt).toLocaleDateString()}</span>
                   {expense.reviewedAt && (
-                    <span>Reviewed: {expense.reviewedAt}</span>
+                    <span>Reviewed: {new Date(expense.reviewedAt).toLocaleDateString()}</span>
                   )}
                 </div>
                 <div className="flex items-center space-x-2">
@@ -188,7 +182,7 @@ export const ExpenseManager = () => {
                       <Button 
                         variant="destructive" 
                         size="sm"
-                        onClick={() => handleReject(expense.id)}
+                        onClick={() => handleReject(expense._id)}
                       >
                         <XCircle className="h-4 w-4 mr-1" />
                         Reject
@@ -196,7 +190,7 @@ export const ExpenseManager = () => {
                       <Button 
                         variant="primary" 
                         size="sm"
-                        onClick={() => handleApprove(expense.id)}
+                        onClick={() => handleApprove(expense._id)}
                       >
                         <CheckCircle className="h-4 w-4 mr-1" />
                         Approve
@@ -208,7 +202,8 @@ export const ExpenseManager = () => {
             </div>
           ))}
         </div>
+        )}
       </Card>
     </div>
   );
-};
+}; 

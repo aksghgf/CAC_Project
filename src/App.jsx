@@ -1,60 +1,49 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
-import { AdminDashboard } from './pages/AdminDashboard';
-import { EmployeeDashboard } from './pages/EmployeeDashboard';
-import { setAuthToken, setCurrentUser, logout } from './utils/auth';
+import { UnauthorizedPage } from './pages/UnauthorizedPage';
+import { AdminRoutes } from './routes/AdminRoutes';
+import { EmployeeRoutes } from './routes/EmployeeRoutes';
+import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
+
+function DashboardRedirect() {
+  const { user } = useAuth();
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role === 'admin') return <Navigate to="/admin/dashboard" replace />;
+  if (user.role === 'employee') return <Navigate to="/employee/dashboard" replace />;
+  return <Navigate to="/login" replace />;
+}
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('landing');
-  const [userType, setUserType] = useState(null);
-
-  const handleLoginClick = (type) => {
-    setUserType(type);
-    setCurrentPage('login');
-  };
-
-  const handleLogin = (type, credentials) => {
-    // Mock authentication
-    const mockUser = {
-      id: '1',
-      email: credentials.email,
-      role: type,
-      name: type === 'admin' ? 'Admin User' : 'Employee User'
-    };
-    
-    setAuthToken('mock-token-123');
-    setCurrentUser(mockUser);
-    setCurrentPage(type === 'admin' ? 'admin-dashboard' : 'employee-dashboard');
-  };
-
-  const handleLogout = () => {
-    logout();
-    setCurrentPage('landing');
-    setUserType(null);
-  };
-
-  const handleBack = () => {
-    setCurrentPage('landing');
-    setUserType(null);
-  };
-
-  const renderPage = () => {
-    switch (currentPage) {
-      case 'landing':
-        return <LandingPage onLoginClick={handleLoginClick} />;
-      case 'login':
-        return <LoginPage userType={userType} onLogin={handleLogin} onBack={handleBack} />;
-      case 'admin-dashboard':
-        return <AdminDashboard onLogout={handleLogout} />;
-      case 'employee-dashboard':
-        return <EmployeeDashboard onLogout={handleLogout} />;
-      default:
-        return <LandingPage onLoginClick={handleLoginClick} />;
-    }
-  };
-
-  return <div className="App">{renderPage()}</div>;
+  return (
+    <AuthProvider>
+      <Router>
+        <div className="App">
+          <Routes>
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
+            {/* Dashboard catch-all route */}
+            <Route path="/dashboard" element={<DashboardRedirect />} />
+            {/* Admin Routes */}
+            <Route path="/admin/*" element={<AdminRoutes />} />
+            {/* Employee Routes */}
+            <Route path="/employee/*" element={<EmployeeRoutes />} />
+            {/* Default redirect */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </Router>
+    </AuthProvider>
+  );
 }
 
 export default App;
