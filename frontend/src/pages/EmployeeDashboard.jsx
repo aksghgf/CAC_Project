@@ -16,7 +16,7 @@ export const EmployeeDashboard = () => {
   const [expenses, setExpenses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   useEffect(() => {
     const fetchExpenses = async () => {
@@ -83,12 +83,12 @@ export const EmployeeDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
-      <EmployeeHeader onShowExpenseForm={() => setShowExpenseForm(true)} onLogout={logout} />
+      <EmployeeHeader name={user?.name} onShowExpenseForm={() => setShowExpenseForm(true)} onLogout={logout} />
       {/* Creative Dashboard Header */}
       <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 min-h-[4rem] py-2 px-4 sm:px-8 sm:py-6 bg-gradient-to-r from-purple-600 to-blue-500 shadow-md rounded-b-3xl mb-4 sm:mb-8">
         <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=employee`} alt="Employee Avatar" className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 border-white shadow mb-2 sm:mb-0" />
         <div className="text-center sm:text-left">
-          <h1 className="text-lg sm:text-3xl font-bold text-white mb-1">Welcome, Employee!</h1>
+          <h1 className="text-lg sm:text-3xl font-bold text-white mb-1">Welcome{user?.name ? `, ${user.name}` : ', Employee'}!</h1>
           <p className="text-purple-100 text-sm sm:text-base">Track your expenses and submissions below.</p>
         </div>
       </div>
