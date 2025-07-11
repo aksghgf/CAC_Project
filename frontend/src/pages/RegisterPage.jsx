@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Card } from '../components/ui/Card';
+import api from '../utils/api';
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -29,32 +30,18 @@ const RegisterPage = () => {
     e.preventDefault();
     setIsLoading(true);
     try {
-      // Only admin registration allowed
-      const endpoint = '/api/auth/register-admin';
       const body = {
         name: form.name,
         email: form.email,
         password: form.password,
         businessName: form.businessName
       };
-      const res = await fetch(endpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body)
-      });
-      let data = {};
-      try {
-        data = await res.json();
-      } catch (err) {}
+      const res = await api.post('/auth/register-admin', body);
       setIsLoading(false);
-      if (res.ok) {
-        // success logic
-      } else {
-        alert(data.message || 'Registration failed');
-      }
+      // success logic
     } catch (error) {
       setIsLoading(false);
-      alert(error.message || 'Registration failed');
+      alert(error.response?.data?.message || error.message || 'Registration failed');
     }
   };
 

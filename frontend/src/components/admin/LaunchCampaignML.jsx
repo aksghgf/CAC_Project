@@ -44,8 +44,9 @@ export default function LaunchCampaignML() {
       'channel_referral': form.channel_referral ? 1 : 0,
       'channel_social media': form.channel_social ? 1 : 0,
     };
+    const ML_API_URL = import.meta.env.VITE_ML_API_URL || 'http://localhost:5001';
     try {
-      const res = await fetch('http://localhost:5001/optimize-campaign', {
+      const res = await fetch(`${ML_API_URL}/optimize-campaign`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

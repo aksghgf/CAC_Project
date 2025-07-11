@@ -9,6 +9,7 @@ import dashboardEmpty from '../Assets/dashboard-empty.json';
 import { useAuth } from '../contexts/AuthContext';
 import { Target, BarChart3, DollarSign, Settings, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import api from '../utils/api';
 
 export const AdminDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState('campaigns');
@@ -44,25 +45,17 @@ export const AdminDashboard = ({ onLogout }) => {
     setEmpLoading(true);
     setEmpMsg('');
     try {
-      const res = await fetch('/api/auth/register-employee', {
-        method: 'POST',
+      const res = await api.post('/auth/register-employee', empForm, {
         headers: {
-          'Content-Type': 'application/json',
           'Authorization': `Bearer ${localStorage.getItem('authToken')}`
-        },
-        body: JSON.stringify(empForm)
+        }
       });
-      const data = await res.json();
       setEmpLoading(false);
-      if (res.ok) {
-        setEmpMsg('Employee registered successfully!');
-        setEmpForm({ name: '', email: '', password: '' });
-      } else {
-        setEmpMsg(data.message || 'Registration failed');
-      }
+      setEmpMsg('Employee registered successfully!');
+      setEmpForm({ name: '', email: '', password: '' });
     } catch (error) {
       setEmpLoading(false);
-      setEmpMsg(error.message || 'Registration failed');
+      setEmpMsg(error.response?.data?.message || error.message || 'Registration failed');
     }
   };
 
