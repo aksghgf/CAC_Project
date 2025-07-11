@@ -17,15 +17,24 @@ export const LoginPage = () => {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [error, setError] = useState("");
 
   // Debug: log user on every render
   useEffect(() => {
     console.log('LoginPage user:', user);
   }, [user]);
 
-  // After login, redirect only when user is set
+  // After login, redirect or show error only when user is set
   useEffect(() => {
     if (loginSuccess && user) {
+      if (user.role !== userType) {
+        setError(
+          `You are not registered as a ${userType === 'admin' ? 'Admin' : 'Employee'}. Please use the correct login option.`
+        );
+        logout();
+        setLoginSuccess(false);
+        return;
+      }
       if (user.role === 'admin') {
         navigate('/admin/dashboard', { replace: true });
       } else if (user.role === 'employee') {
@@ -34,25 +43,24 @@ export const LoginPage = () => {
         navigate('/', { replace: true });
       }
     }
-  }, [loginSuccess, user, navigate]);
+  }, [loginSuccess, user, userType, navigate, logout]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     try {
       const result = await login(credentials);
-
+      setIsLoading(false);
       if (result.success) {
-        setIsLoading(false);
-        setLoginSuccess(true); // trigger redirect in effect
+        setLoginSuccess(true); // trigger redirect or error in effect
       } else {
-        setIsLoading(false);
-        alert(result.error || 'Login failed');
+        setError(result.error || 'Login failed');
       }
     } catch (error) {
       setIsLoading(false);
-      alert(error.message || 'Login failed');
+      setError(error.message || 'Login failed');
     }
   };
   
@@ -108,6 +116,9 @@ export const LoginPage = () => {
         </div>
 
         <Card>
+          {error && (
+            <div className="mb-4 text-red-600 text-center font-semibold">{error}</div>
+          )}
           <form onSubmit={handleSubmit} className="space-y-6">
             <Input
               label="Email Address"

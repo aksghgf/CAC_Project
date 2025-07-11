@@ -4,7 +4,7 @@ import { TrendingUp, Target, Zap, Shield, BarChart3, Users } from 'lucide-react'
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import Lottie from 'lottie-react';
-import landingAnimation from '../assets/lf20_49rdyysj.json';
+import landingAnimation from '../Assets/lf20_49rdyysj.json';
 
 export const LandingPage = () => {
   const navigate = useNavigate();

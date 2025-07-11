@@ -5,7 +5,7 @@ import { ExpenseManager } from '../components/admin/ExpenseManager';
 import { AdminNotes } from '../components/admin/AdminNotes';
 import { PerformanceCharts } from '../components/admin/PerformanceCharts';
 import Lottie from 'lottie-react';
-import dashboardEmpty from '../assets/dashboard-empty.json';
+import dashboardEmpty from '../Assets/dashboard-empty.json';
 import { useAuth } from '../contexts/AuthContext';
 import { Target, BarChart3, DollarSign, Settings, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +27,44 @@ export const AdminDashboard = ({ onLogout }) => {
     { id: 'analytics', label: 'Analytics', icon: BarChart3 },
     { id: 'expenses', label: 'Expense Reports', icon: DollarSign },
     { id: 'notes', label: 'Admin Notes', icon: Settings },
+    { id: 'register-employee', label: 'Register Employee', icon: Settings },
   ];
+
+  // State for employee registration
+  const [empForm, setEmpForm] = useState({ name: '', email: '', password: '' });
+  const [empLoading, setEmpLoading] = useState(false);
+  const [empMsg, setEmpMsg] = useState('');
+
+  const handleEmpChange = (e) => {
+    setEmpForm({ ...empForm, [e.target.name]: e.target.value });
+  };
+
+  const handleEmpSubmit = async (e) => {
+    e.preventDefault();
+    setEmpLoading(true);
+    setEmpMsg('');
+    try {
+      const res = await fetch('/api/auth/register-employee', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+        },
+        body: JSON.stringify(empForm)
+      });
+      const data = await res.json();
+      setEmpLoading(false);
+      if (res.ok) {
+        setEmpMsg('Employee registered successfully!');
+        setEmpForm({ name: '', email: '', password: '' });
+      } else {
+        setEmpMsg(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      setEmpLoading(false);
+      setEmpMsg(error.message || 'Registration failed');
+    }
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -54,6 +91,55 @@ export const AdminDashboard = ({ onLogout }) => {
         return <ExpenseManager />;
       case 'notes':
         return <AdminNotes />;
+      case 'register-employee':
+        return (
+          <div className="max-w-md mx-auto mt-8 p-6 bg-white rounded-lg shadow">
+            <h2 className="text-xl font-bold mb-4">Register New Employee</h2>
+            <form onSubmit={handleEmpSubmit} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={empForm.name}
+                  onChange={handleEmpChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={empForm.email}
+                  onChange={handleEmpChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                <input
+                  type="password"
+                  name="password"
+                  value={empForm.password}
+                  onChange={handleEmpChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  required
+                />
+              </div>
+              <button
+                type="submit"
+                className="w-full bg-blue-600 text-white py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                disabled={empLoading}
+              >
+                {empLoading ? 'Registering...' : 'Register Employee'}
+              </button>
+            </form>
+            {empMsg && <div className="mt-4 text-center text-sm text-red-600">{empMsg}</div>}
+          </div>
+        );
       default:
         return null;
     }

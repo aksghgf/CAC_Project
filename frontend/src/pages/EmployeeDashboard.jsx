@@ -7,7 +7,7 @@ import { Modal } from '../components/ui/Modal';
 import { ExpenseForm } from '../components/employee/ExpenseForm';
 import { CheckCircle, XCircle, Clock } from 'lucide-react';
 import Lottie from 'lottie-react';
-import dashboardEmpty from '../assets/dashboard-empty.json';
+import dashboardEmpty from '../Assets/dashboard-empty.json';
 import api from '../utils/api';
 import { useAuth } from '../contexts/AuthContext';
 

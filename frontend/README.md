@@ -180,3 +180,25 @@ This project is licensed under the MIT License.
 ## Support
 
 For support and questions, please contact the development team.
+
+# Project Structure Update
+
+The project is now organized into two main folders:
+
+- `backend/`: Contains all backend code, including API, models, controllers, and configuration.
+- `frontend/`: Contains all frontend code, including React components, pages, routes, assets, and configuration files for the frontend build.
+
+## Backend
+- All files and folders previously in `backend/` remain unchanged.
+
+## Frontend
+- All files and folders previously in `src/` are now in `frontend/src/`.
+- Frontend configuration files (`vite.config.js`, `postcss.config.js`, `tailwind.config.js`, `index.html`, etc.) are now in `frontend/`.
+- The `dist/` folder (frontend build output) is now in `frontend/dist/`.
+
+## Data
+- The `data/` folder remains at the root, as it may be used by both backend and frontend.
+
+---
+
+Please update your scripts and documentation to use the new paths.
