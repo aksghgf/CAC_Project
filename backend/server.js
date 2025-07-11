@@ -73,29 +73,34 @@ app.use('*', (req, res) => {
 // Start server
 const User = require('./models/User');
 const bcrypt = require('bcryptjs');
+const Business = require('./models/Business'); // Add this import
 
 const seedUsers = async () => {
   try {
     const userCount = await User.countDocuments();
     if (userCount === 0) {
-      console.log('Seeding default users...');
-      const salt = await bcrypt.genSalt(10);
+      // 1. Create a default business
+      const business = await Business.create({ name: 'Default Business' });
 
+      const salt = await bcrypt.genSalt(10);
       const adminPassword = await bcrypt.hash('admin123', salt);
       const employeePassword = await bcrypt.hash('employee123', salt);
 
+      // 2. Use business._id for both users
       const adminUser = new User({
         name: 'Default Admin',
         email: 'admin@demo.com',
         password: adminPassword,
-        role: 'admin'
+        role: 'admin',
+        businessId: business._id
       });
 
       const employeeUser = new User({
         name: 'Default Employee',
         email: 'employee@demo.com',
         password: employeePassword,
-        role: 'employee'
+        role: 'employee',
+        businessId: business._id
       });
 
       await adminUser.save();
