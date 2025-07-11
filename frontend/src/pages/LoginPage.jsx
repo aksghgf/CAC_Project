@@ -18,6 +18,7 @@ export const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginSuccess, setLoginSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [wakingUp, setWakingUp] = useState(false);
 
   // Debug: log user on every render
   useEffect(() => {
@@ -49,6 +50,14 @@ export const LoginPage = () => {
     e.preventDefault();
     setIsLoading(true);
     setError("");
+    setWakingUp(false);
+
+    // Wake up backend before login
+    try {
+      await fetch(import.meta.env.VITE_API_URL + '/health', { timeout: 5000 });
+    } catch (wakeErr) {
+      // Ignore errors here, just try login anyway
+    }
 
     try {
       const result = await login(credentials);
@@ -60,7 +69,13 @@ export const LoginPage = () => {
       }
     } catch (error) {
       setIsLoading(false);
-      setError(error.message || 'Login failed');
+      // If network error, show wake-up message
+      if (error.message && error.message.toLowerCase().includes('network')) {
+        setWakingUp(true);
+        setError('The server is waking up. Please wait a few seconds and try again.');
+      } else {
+        setError(error.message || 'Login failed');
+      }
     }
   };
   
@@ -116,7 +131,12 @@ export const LoginPage = () => {
         </div>
 
         <Card>
-          {error && (
+          {wakingUp && (
+            <div className="mb-4 text-yellow-600 text-center font-semibold">
+              <span role="img" aria-label="hourglass">⏳</span> The server is waking up. Please wait a few seconds and try again.
+            </div>
+          )}
+          {error && !wakingUp && (
             <div className="mb-4 text-red-600 text-center font-semibold">{error}</div>
           )}
           <form onSubmit={handleSubmit} className="space-y-6">

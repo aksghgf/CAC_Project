@@ -11,18 +11,18 @@ export const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
       {/* Header */}
-      <header className="sticky top-0 z-30 bg-white shadow-sm" style={{ position: 'sticky', top: 0 }}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
+      <header className="sticky top-0 z-30 bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row justify-between items-center h-16 gap-2 sm:gap-0">
+            <div className="flex items-center mb-2 sm:mb-0">
               <TrendingUp className="h-8 w-8 text-blue-600 mr-2" />
-              <span className="text-xl font-bold text-gray-900">CAC Optimizer Pro</span>
+              <span className="text-lg sm:text-xl font-bold text-gray-900">CAC Optimizer Pro</span>
             </div>
-            <div className="flex space-x-4">
-              <Button variant="outline" onClick={() => navigate('/login')}>
+            <div className="flex flex-col sm:flex-row gap-2 sm:space-x-4 w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto" onClick={() => navigate('/login')}>
                 Admin Login
               </Button>
-              <Button onClick={() => navigate('/login')}>
+              <Button className="w-full sm:w-auto" onClick={() => navigate('/login')}>
                 Employee Login
               </Button>
             </div>
@@ -34,31 +34,31 @@ export const LandingPage = () => {
 
       {/* Hero Section with Lottie Animation */}
       <section className="relative overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 pt-10 pb-10 sm:pt-20 sm:pb-16">
           <div className="flex flex-col-reverse md:flex-row items-center justify-between gap-8">
             <div className="w-full md:w-1/2 text-center md:text-left">
-              <h1 className="text-5xl sm:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-3xl sm:text-5xl font-bold text-gray-900 mb-4 sm:mb-6">
                 Run Ads Like an Agency
                 <span className="text-blue-600"> - Without One</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto md:mx-0">
+              <p className="text-base sm:text-xl text-gray-600 mb-6 sm:mb-8 max-w-3xl mx-auto md:mx-0">
                 Eliminate agency fees and gain full control over your ad spend with our ML-powered 
                 automation platform. Save 15-30% of your budget while achieving better results.
               </p>
-              <div className="flex justify-center md:justify-start space-x-4">
-                <Button size="lg" onClick={() => navigate('/login')}>
+              <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-3 sm:space-x-4">
+                <Button size="lg" className="w-full sm:w-auto" onClick={() => navigate('/login')}>
                   Start Free Trial
                 </Button>
-                <Button variant="outline" size="lg">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto">
                   Watch Demo
                 </Button>
               </div>
             </div>
-            <div className="w-full md:w-1/2 flex justify-center md:justify-end mb-8 md:mb-0">
+            <div className="w-full md:w-1/2 flex justify-center md:justify-end mb-6 md:mb-0">
               <Lottie 
                 animationData={landingAnimation} 
                 loop={true} 
-                className="w-64 h-64 md:w-96 md:h-96 drop-shadow-xl"
+                className="w-48 h-48 sm:w-64 sm:h-64 md:w-96 md:h-96 drop-shadow-xl"
                 aria-label="Business analytics animation"
               />
             </div>
@@ -67,18 +67,18 @@ export const LandingPage = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+      <section className="py-10 sm:py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="text-center mb-10 sm:mb-16">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2 sm:mb-4">
               Why Choose CAC Optimizer Pro?
             </h2>
-            <p className="text-lg text-gray-600">
+            <p className="text-base sm:text-lg text-gray-600">
               Replace expensive agencies with intelligent automation
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 gap-6 sm:gap-8 md:grid-cols-2 lg:grid-cols-3">
             <Card hover padding="lg">
               <div className="text-center">
                 <div className="bg-blue-100 rounded-full p-4 w-16 h-16 mx-auto mb-4">
@@ -161,29 +161,29 @@ export const LandingPage = () => {
       </section>
 
       {/* CTA Section */}
-      <section className="bg-gradient-to-r from-blue-600 to-teal-600 py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+      <section className="bg-gradient-to-r from-blue-600 to-teal-600 py-10 sm:py-20">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-4">
             Ready to Replace Your Agency?
           </h2>
-          <p className="text-xl text-blue-100 mb-8">
+          <p className="text-base sm:text-xl text-blue-100 mb-6 sm:mb-8">
             Join thousands of businesses saving money while improving their ad performance
           </p>
-          <Button size="lg" variant="secondary" onClick={() => navigate('/login')}>
+          <Button size="lg" variant="secondary" className="w-full sm:w-auto" onClick={() => navigate('/login')}>
             Get Started Today
           </Button>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
+      <footer className="bg-gray-900 text-white py-8 sm:py-12">
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-0">
+            <div className="flex items-center mb-2 sm:mb-0">
               <TrendingUp className="h-8 w-8 text-blue-400 mr-2" />
-              <span className="text-xl font-bold">CAC Optimizer Pro</span>
+              <span className="text-lg sm:text-xl font-bold">CAC Optimizer Pro</span>
             </div>
-            <p className="text-gray-400">
+            <p className="text-gray-400 text-center sm:text-left">
               © 2024 CAC Optimizer Pro. All rights reserved.
             </p>
           </div>

@@ -85,21 +85,21 @@ export const EmployeeDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-blue-50">
       <EmployeeHeader onShowExpenseForm={() => setShowExpenseForm(true)} onLogout={logout} />
       {/* Creative Dashboard Header */}
-      <div className="flex items-center gap-4 px-8 py-6 bg-gradient-to-r from-purple-600 to-blue-500 shadow-md rounded-b-3xl">
-        <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=employee`} alt="Employee Avatar" className="w-16 h-16 rounded-full border-4 border-white shadow" />
-        <div>
-          <h1 className="text-3xl font-bold text-white mb-1">Welcome, Employee!</h1>
-          <p className="text-purple-100">Track your expenses and submissions below.</p>
+      <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-4 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-purple-600 to-blue-500 shadow-md rounded-b-3xl mb-4 sm:mb-8">
+        <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=employee`} alt="Employee Avatar" className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 border-white shadow mb-2 sm:mb-0" />
+        <div className="text-center sm:text-left">
+          <h1 className="text-lg sm:text-3xl font-bold text-white mb-1">Welcome, Employee!</h1>
+          <p className="text-purple-100 text-sm sm:text-base">Track your expenses and submissions below.</p>
         </div>
       </div>
       <EmployeeMain>
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <span className="text-lg text-gray-500">Loading expenses...</span>
+          <div className="flex flex-col items-center justify-center py-10 sm:py-16">
+            <span className="text-base sm:text-lg text-gray-500">Loading expenses...</span>
           </div>
         ) : error ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <span className="text-lg text-red-500">{error}</span>
+          <div className="flex flex-col items-center justify-center py-10 sm:py-16">
+            <span className="text-base sm:text-lg text-red-500">{error}</span>
           </div>
         ) : hasExpenses ? (
           <>
@@ -115,9 +115,9 @@ export const EmployeeDashboard = () => {
             />
           </>
         ) : (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Lottie animationData={dashboardEmpty} className="w-64 h-64 mb-4" loop={true} />
-            <h3 className="text-xl font-semibold mb-2 text-gray-700">No Expenses Yet</h3>
+          <div className="flex flex-col items-center justify-center py-10 sm:py-16">
+            <Lottie animationData={dashboardEmpty} className="w-40 h-40 sm:w-64 sm:h-64 mb-4" loop={true} />
+            <h3 className="text-lg sm:text-xl font-semibold mb-2 text-gray-700">No Expenses Yet</h3>
             <p className="text-gray-500 mb-4">Submit your first expense to see it here!</p>
           </div>
         )}

@@ -141,40 +141,40 @@ export const AdminDashboard = ({ onLogout }) => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-teal-50">
       {/* Welcome Card (sticky at top) */}
-      <div className="sticky top-0 z-30 flex items-center justify-between gap-4 px-8 py-6 bg-gradient-to-r from-blue-600 to-teal-500 shadow-md rounded-b-3xl mb-8" style={{ position: 'sticky', top: 0 }}>
-        <div className="flex items-center gap-4">
-          <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=admin`} alt="Admin Avatar" className="w-16 h-16 rounded-full border-4 border-white shadow" />
-          <div>
-            <h1 className="text-3xl font-bold text-white mb-1">Welcome back, {user?.name || 'Admin'}!</h1>
-            <p className="text-blue-100">Here's your business at a glance.</p>
+      <div className="sticky top-0 z-30 flex flex-col sm:flex-row items-center justify-between gap-4 px-4 sm:px-8 py-4 sm:py-6 bg-gradient-to-r from-blue-600 to-teal-500 shadow-md rounded-b-3xl mb-6 sm:mb-8" style={{ position: 'sticky', top: 0 }}>
+        <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 w-full sm:w-auto">
+          <img src={`https://api.dicebear.com/7.x/identicon/svg?seed=admin`} alt="Admin Avatar" className="w-12 h-12 sm:w-16 sm:h-16 rounded-full border-4 border-white shadow mb-2 sm:mb-0" />
+          <div className="text-center sm:text-left">
+            <h1 className="text-xl sm:text-3xl font-bold text-white mb-1">Welcome back, {user?.name || 'Admin'}!</h1>
+            <p className="text-blue-100 text-sm sm:text-base">Here's your business at a glance.</p>
           </div>
         </div>
         <button
           onClick={handleLogout}
-          className="flex items-center bg-white text-blue-600 hover:bg-blue-50 font-medium px-4 py-2 rounded-lg shadow transition-colors"
+          className="flex items-center justify-center bg-white text-blue-600 hover:bg-blue-50 font-medium px-3 sm:px-4 py-2 rounded-lg shadow transition-colors w-full sm:w-auto"
         >
           <LogOut className="h-5 w-5 mr-2" />
           Logout
         </button>
       </div>
       {/* Spacer to prevent content from being hidden under sticky card */}
-      <div className="h-32" />
+      <div className="h-28 sm:h-32" />
       {/* Tab Navigation with Icons */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
-        <div className="flex space-x-8 border-b">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 mb-4 sm:mb-6">
+        <div className="flex overflow-x-auto no-scrollbar space-x-4 sm:space-x-8 border-b">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm ${
+                className={`flex items-center py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-600'
                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                 }`}
               >
-                <Icon className="h-4 w-4 mr-2" />
+                <Icon className="h-4 w-4 mr-1 sm:mr-2" />
                 {tab.label}
               </button>
             );
@@ -182,7 +182,7 @@ export const AdminDashboard = ({ onLogout }) => {
         </div>
       </div>
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
         {renderContent()}
       </div>
     </div>
