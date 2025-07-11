@@ -13,7 +13,7 @@ export const LandingPage = () => {
       {/* Header */}
       <header className="sticky top-0 z-30 bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
-          <div className="flex flex-col sm:flex-row justify-between items-center h-16 gap-2 sm:gap-0">
+          <div className="flex flex-col sm:flex-row justify-between items-center min-h-[5.5rem] py-3 gap-2 sm:gap-0">
             <div className="flex items-center mb-2 sm:mb-0">
               <TrendingUp className="h-8 w-8 text-blue-600 mr-2" />
               <span className="text-lg sm:text-xl font-bold text-gray-900">CAC Optimizer Pro</span>
