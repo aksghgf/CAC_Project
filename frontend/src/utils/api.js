@@ -3,7 +3,7 @@ import { getAuthToken, removeAuthToken } from './auth';
 console.log(".env for frontend ",import.meta.env.VITE_API_URL);
 // Create axios instance
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api', // Hardcoded for local dev
+  baseURL: import.meta.env.VITE_API_URL, 
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
